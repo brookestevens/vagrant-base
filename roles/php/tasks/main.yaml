@@ -1,0 +1,105 @@
+---
+- name: Check if PHP is installed.
+  command: which php
+  changed_when: false
+  failed_when: false
+  register: php_installed
+
+- name: Clone the PHP repository.
+  git:
+    repo: "{{ php_source_repo }}"
+    dest: "{{ php_source_clone_dir }}"
+    version: "{{ php_source_version }}"
+    accept_hostkey: true
+    depth: "{{ php_source_clone_depth }}"
+  when: php_installed.rc != 0
+
+- name: Ensure PHP installation path exists.
+  file:
+    path: "{{ php_source_install_path }}"
+    state: directory
+    mode: 0755
+  when: php_installed.rc != 0
+
+- name: Build configure script.
+  command: >
+    ./buildconf --force
+    chdir={{ php_source_clone_dir }}
+  when: php_installed.rc != 0
+
+- name: Run configure script.
+  command: >
+    {{ php_source_configure_command }}
+    chdir={{ php_source_clone_dir }}
+  when: php_installed.rc != 0
+
+# number of cores: nproc
+# check free memory: free -h
+# check swap mem: swapon --show
+
+- name: Make and install PHP.
+  command: >
+    {{ item }}
+    chdir={{ php_source_clone_dir }}
+  with_items:
+    - 'make -j2' # -j2 sepcifies number of cores
+    - 'make install'
+  when: php_installed.rc != 0
+
+- name: Ensure php executable is symlinked into a standard path.
+  file:  # noqa 208
+    src: "{{ php_source_install_path }}/bin/php"
+    dest: /usr/bin/php
+    state: link
+
+# Set up PHP-FPM
+- block:
+  - name: Ensure php-fpm executable is symlinked into a standard path.
+    file:  # noqa 208
+      src: "{{ php_source_install_path }}/sbin/php-fpm"
+      dest: "/usr/sbin/php-fpm"
+      state: link
+
+  - name: Ensure php-fpm init script is installed.
+    template:
+      src: php-fpm.j2
+      dest: "/etc/init.d/php-fpm"
+      mode: 0755
+
+  - name: Ensure php-fpm config directory exists.
+    file:
+      path: "/opt/php/etc/php-fpm.d"
+      state: directory
+      mode: 0755
+
+  # This conf file will include files in the php-fpm.d directory
+  - name: Copy default conf file.
+    copy:
+      src: /opt/php/etc/php-fpm.conf.default
+      dest: /opt/php/etc/php-fpm.conf
+      remote_src: yes
+
+  - name: Ensure php-fpm config file is installed.
+    copy:
+      src: templates/php-fpm.conf
+      dest: "/opt/php/etc/php-fpm.d/php-fpm.conf"
+      mode: 0644
+
+  # todo: Add a service file for php-fpm
+  # - name: start PHP-fpm
+  #   command: /etc/initd.d/php-fpm start
+  - name: Post install message.
+    debug:
+      msg: Please run sudo /etc/init.d/php-fpm start sshing into the VM
+  
+  when: "'--enable-fpm' in php_source_configure_command"
+
+# Install pear/pecl php-dev doiesnt have pear isntalled uatomatically?
+
+# Install extra php packages.
+- name: Ensure PHP packages are installed.
+  apt:
+    name: "{{ php_packages }}"
+    state: present
+    install_recommends: true
+  register: php_package_install

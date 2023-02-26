@@ -1,0 +1,34 @@
+---
+- name: Install PHP, Node, NGINX, and MYSQL
+  hosts: all
+  roles:
+    - role: os
+      become: yes
+    - role: nginxinc.nginx
+      become: yes
+    - role: php
+      become: yes
+    - role: geerlingguy.mysql
+      become: yes
+    - role: node
+    - role: mysql
+
+  tasks:
+  - name: Copy nginx server config files
+    become: yes
+    copy:
+      src: "files/{{ item }}"
+      dest: "/etc/nginx/conf.d/{{ item }}"
+      mode: 0644
+    with_items:
+      - 'default.conf'
+
+  - name: Add vagrant user to nginx group
+    become: yes
+    command: usermod -a -G nginx vagrant
+
+  - name: Restart nginx
+    become: yes
+    service:
+      name: 'nginx'
+      state: 'restarted'

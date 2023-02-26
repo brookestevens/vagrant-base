@@ -1,0 +1,22 @@
+---
+- name: Check if nvm is installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+  register: nvm_installed
+
+- block:
+  - name: Install nvm
+    shell: >
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+    args:
+      creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+  
+  # node: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.28' not found (required by node)
+  # Error message limits to node versions up to 14
+  - name: Install Node 14
+    shell: >
+      source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install 14
+    args:
+      executable: /bin/bash
+
+  when: nvm_installed.stat.exists == False

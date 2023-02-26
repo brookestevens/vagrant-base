@@ -1,0 +1,32 @@
+--- 
+- name: Update apt cache.
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: Ensure dependencies for building from source are installed
+  apt:
+    name:
+      - apt-file # find files from apt packages
+      - build-essential
+      - autoconf
+      - automake
+      - libtool
+      - bison
+      - pkg-config
+      - re2c
+      - libsqlite3-dev
+      - libonig-dev
+      - libxml2-dev
+      - libcurl4-openssl-dev
+      - libbz2-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libxpm-dev
+      - libfreetype6-dev
+      - libgmp3-dev
+      - libmcrypt-dev
+      - libmariadbclient-dev
+      - libpspell-dev
+      - librecode-dev
+      - libssl-dev
+      - unixodbc-dev # required for odbc
+    state: present

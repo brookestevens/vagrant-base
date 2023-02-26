@@ -1,0 +1,32 @@
+---
+
+# If this fials, it means the password has been changed.
+# By default, the password is '' which is empty in the default my.cnf
+# password might be 'root' ??
+- name: Change default mysql password
+  mysql_query:
+    query:
+      - ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
+      - FLUSH PRIVILEGES
+    config_file: /etc/mysql/my.cnf
+  ignore_errors: true
+
+- name: Create .my.cnf file
+  become: yes
+  copy:
+    src: files/my.cnf
+    dest: /etc/mysql/my.cnf
+    mode: 0644
+
+- name: Check for database
+  mysql_query:
+    query: SHOW DATABASES LIKE 'drupal9'
+    config_file: /etc/mysql/my.cnf
+  register: result
+
+- name: Create a new database with name 'drupal9'
+  mysql_db:
+    name: drupal9
+    state: present
+    config_file: /etc/mysql/my.cnf
+  when: result.rowcount[0] == 0

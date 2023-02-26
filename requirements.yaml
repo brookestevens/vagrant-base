@@ -1,0 +1,15 @@
+---
+collections:
+  - name: ansible.posix
+    version: 1.4.0
+  - name: community.general
+    version: 5.5.0
+  - name: community.mysql
+    version: 3.5.1
+
+roles:
+  # Install a role from Ansible Galaxy.
+  - name: nginxinc.nginx
+    version: 0.23.2
+  - name: geerlingguy.mysql
+    version: 4.3.0

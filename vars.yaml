@@ -1,0 +1,92 @@
+---
+# PHP
+# Extra packages to install (in addition to distro-specific default lists).
+php_packages: []
+
+# If this is set to false, none of the following options will have any effect.
+# Any and all changes to /etc/php.ini will be your responsibility.
+php_use_managed_ini: true
+
+php_expose_php: "On"
+php_memory_limit: "256M"
+php_max_execution_time: "60"
+php_max_input_time: "60"
+php_max_input_vars: "1000"
+php_realpath_cache_size: "32K"
+
+php_file_uploads: "On"
+php_upload_max_filesize: "64M"
+php_max_file_uploads: "20"
+
+php_post_max_size: "32M"
+php_allow_url_fopen: "On"
+
+php_sendmail_path: "/usr/sbin/sendmail -t -i"
+php_output_buffering: "4096"
+php_short_open_tag: "Off"
+php_disable_functions: []
+php_precision: 14
+php_serialize_precision: "-1"
+
+php_session_cookie_lifetime: 0
+php_session_gc_probability: 1
+php_session_gc_divisor: 1000
+php_session_gc_maxlifetime: 1440
+php_session_save_handler: files
+php_session_save_path: ''
+
+php_error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
+php_display_errors: "Off"
+php_display_startup_errors: "Off"
+
+# Install PHP from source (instead of using a package manager) with these vars.
+php_install_from_source: false
+php_source_repo: "https://github.com/php/php-src.git"
+php_source_version: "PHP-8.0"
+php_source_clone_dir: "~/php-src"
+php_source_clone_depth: 1
+php_source_install_path: "/opt/php"
+php_source_install_gmp_path: "/usr/include/x86_64-linux-gnu/gmp.h"
+php_source_mysql_config: "/usr/bin/mysql_config"
+php_source_configure_command: >
+  ./configure
+  --prefix={{ php_source_install_path }}
+  --with-config-file-path=/etc
+  --with-config-file-scan-dir=/etc/php.d
+  --enable-cli
+  --enable-fpm
+  --enable-mbstring
+  --enable-zip
+  --enable-bcmath
+  --enable-pcntl
+  --enable-ftp
+  --enable-exif
+  --enable-calendar
+  --enable-opcache
+  --enable-pdo
+  --enable-sysvmsg
+  --enable-sysvsem
+  --enable-sysvshm
+  --enable-wddx
+  --with-curl
+  --with-mcrypt
+  --with-iconv
+  --with-gmp
+  --with-pspell
+  --with-gd
+  --with-jpeg-dir=/usr
+  --with-png-dir=/usr
+  --with-zlib-dir=/usr
+  --with-xpm-dir=/usr
+  --with-freetype-dir=/usr
+  --enable-gd-native-ttf
+  --enable-gd-jis-conv
+  --with-openssl
+  --with-pdo-mysql=/usr
+  --with-gettext=/usr
+  --with-zlib=/usr
+  --with-bz2=/usr
+  --with-recode=/usr
+  --with-mysqli={{ php_source_mysql_config }}
+
+# MYSQL
