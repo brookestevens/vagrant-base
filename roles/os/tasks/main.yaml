@@ -28,5 +28,7 @@
       - libpspell-dev
       - librecode-dev
       - libssl-dev
+      - libzip-dev # For ZipArchive
+      - libwebp-dev # for WebP image format
       - unixodbc-dev # required for odbc
     state: present
