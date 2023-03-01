@@ -28,13 +28,6 @@ php_disable_functions: []
 php_precision: 14
 php_serialize_precision: "-1"
 
-php_session_cookie_lifetime: 0
-php_session_gc_probability: 1
-php_session_gc_divisor: 1000
-php_session_gc_maxlifetime: 1440
-php_session_save_handler: files
-php_session_save_path: ''
-
 php_error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
 php_display_errors: "Off"
 php_display_startup_errors: "Off"
@@ -46,13 +39,14 @@ php_source_version: "PHP-8.0"
 php_source_clone_dir: "~/php-src"
 php_source_clone_depth: 1
 php_source_install_path: "/opt/php"
+php_conf_path: "/etc/php.d"
 php_source_install_gmp_path: "/usr/include/x86_64-linux-gnu/gmp.h"
 php_source_mysql_config: "/usr/bin/mysql_config"
 php_source_configure_command: >
   ./configure
   --prefix={{ php_source_install_path }}
-  --with-config-file-path=/etc
-  --with-config-file-scan-dir=/etc/php.d
+  --with-config-file-path={{ php_conf_path }}
+  --with-config-file-scan-dir=/opt/php/etc/php-fpm.d
   --enable-cli
   --enable-fpm
   --enable-mbstring
