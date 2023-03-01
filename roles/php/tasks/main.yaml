@@ -36,7 +36,6 @@
 # number of cores: nproc
 # check free memory: free -h
 # check swap mem: swapon --show
-
 - name: Make and install PHP.
   command: >
     {{ item }}
@@ -51,6 +50,19 @@
     src: "{{ php_source_install_path }}/bin/php"
     dest: /usr/bin/php
     state: link
+
+# Put custom php.ini files here
+- name: Create php.d directory.
+  file:
+    path: "{{ php_conf_path }}"
+    state: directory
+    mode: 0755
+
+- name: Copy PHP.ini to php.d
+  copy:
+    src: "files/php.ini"
+    dest: "{{ php_conf_path }}"
+    mode: 0644
 
 # Set up PHP-FPM
 - block:
